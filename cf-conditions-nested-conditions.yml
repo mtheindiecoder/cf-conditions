@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  Environment:
+    Description: Deploy Environment.
+    Type: String
+    AllowedValues:
+      - prod
+      - test
+      - dev
+
+Conditions: 
+  IsTestEnvironment: !Equals 
+    - !Ref Environment
+    - test
+
+  IsDevEnvironment: !Equals 
+    - !Ref Environment
+    - dev
+  
+  IsNotProductionEnvironment: !Or
+    - !Condition IsTestEnvironment
+    - !Condition IsDevEnvironment
+
+Resources:
+  Queue:
+    Type: 'AWS::SQS::Queue'
+    Condition: IsNotProductionEnvironment
